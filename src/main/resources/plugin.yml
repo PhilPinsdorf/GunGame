@@ -1,0 +1,6 @@
+name: Gungame
+version: '${project.version}'
+main: de.rexituz.gungame.main.Main
+api-version: 1.19
+authors: [ rexituz ]
+description: Small Gun Game Plugin.
