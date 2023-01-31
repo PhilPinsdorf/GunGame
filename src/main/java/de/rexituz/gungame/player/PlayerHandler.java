@@ -5,6 +5,9 @@ import de.rexituz.gungame.equipment.LevelEquipment;
 import de.rexituz.gungame.main.Main;
 import de.rexituz.gungame.positions.Positions;
 import de.rexituz.gungame.scoreboard.ScoreboardHandler;
+import eu.cloudnetservice.driver.permission.PermissionGroup;
+import eu.cloudnetservice.driver.permission.PermissionManagement;
+import eu.cloudnetservice.driver.permission.PermissionUser;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -14,10 +17,18 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 
 public class PlayerHandler {
-    private static HashMap<String, Integer> playerLevelMap = new HashMap<String, Integer>();
-    private static HashMap<String, String> playerLastHitBy = new HashMap<String, String>();
-    private static HashMap<String, Long> playerLastHitWhen = new HashMap<String, Long>();
-    private static HashMap<String, Integer> playerSessionKills = new HashMap<String, Integer>();
+    private static final HashMap<String, Integer> playerLevelMap = new HashMap<>();
+    private static final HashMap<String, String> playerLastHitBy = new HashMap<>();
+    private static final HashMap<String, Long> playerLastHitWhen = new HashMap<>();
+    private static final HashMap<String, Integer> playerSessionKills = new HashMap<>();
+
+    public static void spawnPlayer(Player player) {
+        registerPlayer(player);
+        player.sendTitle(ChatColor.DARK_AQUA + "GunGame", ChatColor.GRAY + "Level auf mit jedem Kill!", 10, 90, 20);
+        player.teleport(Positions.SPAWN.getLocation());
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+        ScoreboardHandler.setScoreBoard(player);
+    }
 
     public static void registerPlayer(Player player) {
         String name = player.getName();
@@ -28,7 +39,6 @@ public class PlayerHandler {
 
         if(! playerSessionKills.containsKey(name)) {
             playerSessionKills.put(player.getName(), 0);
-            return;
         }
 
         refreshPlayer(player);
@@ -39,31 +49,10 @@ public class PlayerHandler {
         player.setExp(0.999f);
         player.setLevel(getPlayerLevel(player));
         String suffix = ChatColor.DARK_GRAY + " [" + ChatColor.GOLD + "Lvl. " + ChatColor.GREEN + getPlayerLevel(player) + ChatColor.DARK_GRAY + "]";
-        player.setPlayerListName(player.getName() + suffix);
-        player.setDisplayName(player.getName() + suffix);
+        String color = getPlayerColor(player);
+        player.setPlayerListName(color + player.getName() + suffix);
+        player.setDisplayName(color + player.getName() + suffix);
         equipPlayer(player);
-    }
-
-    public static void increasePlayer(Player player) {
-        if(getPlayerLevel(player) + 1 <= maxEquipmentLevel()) {
-            playerLevelMap.replace(player.getName(), getPlayerLevel(player) + 1);
-        }
-
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-        refreshPlayer(player);
-    }
-
-    public static void decreasePlayer(Player player) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), new Runnable() {
-            public void run() {
-                if(getPlayerLevel(player) - 1 >= 0) {
-                    playerLevelMap.replace(player.getName(), getPlayerLevel(player) - 1);
-                }
-
-                player.playSound(player.getLocation(), Sound.ENTITY_SKELETON_HURT, 1, 0);
-                refreshPlayer(player);
-            }
-        },  4L);
     }
 
     public static void equipPlayer(Player player) {
@@ -81,12 +70,45 @@ public class PlayerHandler {
         player.updateInventory();
     }
 
-    public static void spawnPlayer(Player player) {
-        registerPlayer(player);
-        player.sendTitle(ChatColor.DARK_AQUA + "GunGame", ChatColor.GRAY + "Level auf mit jedem Kill!", 10, 90, 20);
-        player.teleport(Positions.SPAWN.getLocation());
+    public static void increasePlayer(Player player) {
+        if(getPlayerLevel(player) + 1 <= maxEquipmentLevel()) {
+            playerLevelMap.replace(player.getName(), getPlayerLevel(player) + 1);
+        }
+
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-        ScoreboardHandler.setScoreBoard(player);
+        refreshPlayer(player);
+    }
+
+    public static void decreasePlayer(Player player) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance().getPlugin(), () -> {
+            if(getPlayerLevel(player) - 1 >= 0) {
+                playerLevelMap.replace(player.getName(), getPlayerLevel(player) - 1);
+            }
+
+            player.playSound(player.getLocation(), Sound.ENTITY_SKELETON_HURT, 1, 0.5f);
+            refreshPlayer(player);
+        },  4L);
+    }
+
+    private static String getPlayerColor(Player player) {
+        PermissionManagement permissionManagement = Main.getInstance().getPermissionManagement();
+        PermissionUser permissionUser = permissionManagement.user(player.getUniqueId());
+
+        if(permissionUser == null) return ChatColor.WHITE.toString();
+
+        PermissionGroup userPermissionGroup = permissionManagement.highestPermissionGroup(permissionUser);
+
+        if(userPermissionGroup == null) {
+            PermissionGroup defaultPermissionGroup = permissionManagement.defaultPermissionGroup();
+
+            if(defaultPermissionGroup == null) return ChatColor.WHITE.toString();
+
+            String unconvertedColor = defaultPermissionGroup.color();
+            return ChatColor.COLOR_CHAR + unconvertedColor.substring(1);
+        }
+
+        String unconvertedColor = userPermissionGroup.color();
+        return ChatColor.COLOR_CHAR + unconvertedColor.substring(1);
     }
 
     public static int getPlayerLevel(Player player) {
@@ -103,15 +125,15 @@ public class PlayerHandler {
         return Equipments.getEquipments().size() - 1;
     }
 
+    public static void addKill(Player player) {
+        playerSessionKills.put(player.getName(), playerSessionKills.get(player.getName()) + 1);
+    }
+
     public static HashMap<String, String> getPlayerLastHitBy() {
         return playerLastHitBy;
     }
 
     public static HashMap<String, Long> getPlayerLastHitWhen() {
         return playerLastHitWhen;
-    }
-
-    public static void addKill(Player player) {
-        playerSessionKills.put(player.getName(), playerSessionKills.get(player.getName()) + 1);
     }
 }
