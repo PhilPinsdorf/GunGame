@@ -9,7 +9,7 @@
     <version>0.1</version>
     <packaging>jar</packaging>
 
-    <name>Gungame</name>
+    <name>GunGame</name>
 
     <description>Small Gun Game Plugin.</description>
     <properties>
@@ -30,7 +30,7 @@
                         <annotationProcessorPath>
                             <groupId>eu.cloudnetservice.cloudnet</groupId>
                             <artifactId>platform-inject-processor</artifactId>
-                            <version>4.0.0-RC7-SNAPSHOT</version>
+                            <version>4.0.0-RC8-SNAPSHOT</version>
                         </annotationProcessorPath>
                     </annotationProcessorPaths>
                 </configuration>
@@ -80,7 +80,7 @@
             <dependency>
                 <groupId>eu.cloudnetservice.cloudnet</groupId>
                 <artifactId>bom</artifactId>
-                <version>4.0.0-RC7-SNAPSHOT</version>
+                <version>4.0.0-RC8-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

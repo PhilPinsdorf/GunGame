@@ -1,5 +1,6 @@
-package de.rexituz.gungame.main;
+package de.rexituz.gungame;
 
+import de.rexituz.gungame.config.ConfigHandler;
 import de.rexituz.gungame.events.EventMaster;
 import de.rexituz.gungame.player.PlayerHandler;
 import de.rexituz.gungame.scoreboard.ScoreboardHandler;
@@ -18,21 +19,22 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @PlatformPlugin(
         platform = "bukkit",
         name = "GunGame",
-        version = "1.0",
+        version = "0.1",
         authors = "rexituz",
+        pluginFileNames = "plugin.yml",
         api = "1.19",
-        description = "A GunGame plugin for the Game Night.",
+        description = "A simple GunGame plugin for the Game Night.",
         dependencies = @Dependency(name = "CloudNet-CloudPerms")
 )
 
-public final class Main implements PlatformEntrypoint {
-    private static Main instance;
+public final class GunGame implements PlatformEntrypoint {
+    private static GunGame instance;
     private final Plugin plugin;
     PermissionManagement permissionManagement;
     private final static String prefix = ChatColor.DARK_GRAY + "[" + ChatColor.DARK_AQUA + "GunGame" + ChatColor.DARK_GRAY + "] ";
 
     @Inject
-    private Main(
+    private GunGame(
             @NonNull Plugin plugin,
             @NonNull PermissionManagement permissionManagement)
     {
@@ -45,6 +47,7 @@ public final class Main implements PlatformEntrypoint {
     public void onLoad() {
         // Plugin startup logic
         EventMaster.registerEvents();
+        ConfigHandler.loadConfig();
 
         World world = Bukkit.getWorld("world");
 
@@ -70,7 +73,7 @@ public final class Main implements PlatformEntrypoint {
         // Plugin shutdown logic
     }
 
-    public static Main getInstance() {
+    public static GunGame getInstance() {
         return instance;
     }
 

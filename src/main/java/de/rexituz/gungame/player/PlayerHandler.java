@@ -2,8 +2,8 @@ package de.rexituz.gungame.player;
 
 import de.rexituz.gungame.equipment.Equipments;
 import de.rexituz.gungame.equipment.LevelEquipment;
-import de.rexituz.gungame.main.Main;
-import de.rexituz.gungame.positions.Positions;
+import de.rexituz.gungame.GunGame;
+import de.rexituz.gungame.positions.PositionHandler;
 import de.rexituz.gungame.scoreboard.ScoreboardHandler;
 import eu.cloudnetservice.driver.permission.PermissionGroup;
 import eu.cloudnetservice.driver.permission.PermissionManagement;
@@ -25,7 +25,7 @@ public class PlayerHandler {
     public static void spawnPlayer(Player player) {
         registerPlayer(player);
         player.sendTitle(ChatColor.DARK_AQUA + "GunGame", ChatColor.GRAY + "Level auf mit jedem Kill!", 10, 90, 20);
-        player.teleport(Positions.SPAWN.getLocation());
+        player.teleport(PositionHandler.getPosition("spawn"));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
         ScoreboardHandler.setScoreBoard(player);
     }
@@ -80,7 +80,7 @@ public class PlayerHandler {
     }
 
     public static void decreasePlayer(Player player) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance().getPlugin(), () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(GunGame.getInstance().getPlugin(), () -> {
             if(getPlayerLevel(player) - 1 >= 0) {
                 playerLevelMap.replace(player.getName(), getPlayerLevel(player) - 1);
             }
@@ -91,7 +91,7 @@ public class PlayerHandler {
     }
 
     private static String getPlayerColor(Player player) {
-        PermissionManagement permissionManagement = Main.getInstance().getPermissionManagement();
+        PermissionManagement permissionManagement = GunGame.getInstance().getPermissionManagement();
         PermissionUser permissionUser = permissionManagement.user(player.getUniqueId());
 
         if(permissionUser == null) return ChatColor.WHITE.toString();

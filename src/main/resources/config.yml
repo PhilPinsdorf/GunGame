@@ -1,0 +1,25 @@
+positions:
+  spawn:
+    ==: org.bukkit.Location
+    world: "world"
+    x: 0.5
+    y: 90.0
+    z: -0.5
+    pitch: 0.0
+    yaw: 90.0
+  pos_1:
+    ==: org.bukkit.Location
+    world: "world"
+    x: -6.0
+    y: 80.0
+    z: -7.0
+    pitch: 0.0
+    yaw: 0.0
+  pos_2:
+    ==: org.bukkit.Location
+    world: "world"
+    x: 8.0
+    y: 100.0
+    z: 6.0
+    pitch: 0.0
+    yaw: 0.0

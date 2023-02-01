@@ -1,6 +1,6 @@
 package de.rexituz.gungame.scoreboard;
 
-import de.rexituz.gungame.main.Main;
+import de.rexituz.gungame.GunGame;
 import de.rexituz.gungame.player.PlayerHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -69,7 +69,7 @@ public class ScoreboardHandler {
     }
 
     public static void runUpdates() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance().getPlugin(), () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(GunGame.getInstance().getPlugin(), () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 updateScoreBoard(player);
             }
