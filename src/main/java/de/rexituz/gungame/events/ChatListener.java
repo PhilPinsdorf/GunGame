@@ -8,6 +8,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class ChatListener implements Listener {
     @EventHandler
     private void onChat(AsyncPlayerChatEvent event) {
-        event.setFormat("%s " + ChatColor.GRAY + " » %s");
+        event.setFormat("%s " + ChatColor.GRAY + " » " + ChatColor.WHITE + "%s");
     }
 }
